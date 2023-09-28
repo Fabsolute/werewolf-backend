@@ -1,0 +1,14 @@
+<section class="row">
+    <article class="column">
+        <h2>Game!11</h2>
+        <button type="button" id="ping-button">Ping</button>
+        <input type="text" id="username" placeholder="Username"/>
+        <input type="text" id="game-name" placeholder="Game Name"/>
+        <button type="button" id="join-button">Join or create</button>
+        <hr/>
+        <input type="text" id="message" placeholder="Message"/>
+        <button type="button" id="send-message-button" disabled>Send Message</button>
+        <ul id="user-list">
+        </ul>
+    </article>
+</section>
