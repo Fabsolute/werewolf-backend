@@ -1,6 +1,7 @@
 defmodule WerewolfWeb.RoomChannel do
   use WerewolfWeb, :channel
   alias WerewolfWeb.Presence
+  alias Werewolf.Game.State, as: Game
 
   intercept ["presence_diff"]
 
@@ -21,22 +22,23 @@ defmodule WerewolfWeb.RoomChannel do
     end
   end
 
-  @impl true
-  def handle_in("ping", payload, socket) do
-    {:reply, {:ok, %{
-      hey: payload,
-      room_id: socket.assigns.room_id,
-      username: socket.assigns.username
-    }}, socket |> assign(:ping, true)}
-  end
+#  @impl true
+#  def handle_in("ping", payload, socket) do
+#    Game.State.list(socket.assigns.room_id)
+#    {:reply, {:ok, %{
+#      hey: payload,
+#      room_id: socket.assigns.room_id,
+#      username: socket.assigns.username
+#    }}, socket |> assign(:ping, true)}
+#  end
 
-  # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (room:lobby).
-  @impl true
-  def handle_in("shout", payload, socket) do
-    broadcast(socket, "shout", %{payload: payload, username: socket.assigns.username})
-    {:noreply, socket}
-  end
+#  # It is also common to receive messages from the client and
+#  # broadcast to everyone in the current topic (room:lobby).
+#  @impl true
+#  def handle_in("shout", payload, socket) do
+#    broadcast(socket, "shout", %{payload: payload, username: socket.assigns.username})
+#    {:noreply, socket}
+#  end
 
   @impl true
   def handle_out("presence_diff", %{joins: joins, leaves: leaves}, socket) do
@@ -49,10 +51,17 @@ defmodule WerewolfWeb.RoomChannel do
 
   @impl true
   def handle_info(:after_join, socket) do
-    Presence.track(socket, socket.assigns.username, %{secret: true})
+    Presence.track(socket, socket.assigns.username, %{})
     push(socket, "presence_state", %{users: Presence.list(socket) |> Map.keys})
 
+    Game.join(socket.assigns.room_id)
     {:noreply, socket}
+  end
+
+  @impl true
+  def terminate(_reason, socket) do
+    Game.leave(socket.assigns.room_id)
+    {:stop, :shutdown, socket}
   end
 
   # Add authorization logic here as required.

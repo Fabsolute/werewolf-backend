@@ -15,9 +15,11 @@ defmodule Werewolf.Application do
 
       WerewolfWeb.Presence,
       # Start the Endpoint (http/https)
-      WerewolfWeb.Endpoint
+      WerewolfWeb.Endpoint,
       # Start a worker by calling: Werewolf.Worker.start_link(arg)
       # {Werewolf.Worker, arg}
+      Werewolf.Game.Supervisor,
+      {Registry, name: Werewolf.Registry, keys: :unique}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
