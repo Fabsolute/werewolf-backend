@@ -12,7 +12,6 @@ defmodule Werewolf.Application do
       WerewolfWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Werewolf.PubSub},
-
       WerewolfWeb.Presence,
       # Start the Endpoint (http/https)
       WerewolfWeb.Endpoint,

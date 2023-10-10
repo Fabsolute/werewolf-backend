@@ -7,7 +7,11 @@ defmodule Werewolf.Game.Supervisor do
   end
 
   def start_child(room_id) do
-    DynamicSupervisor.start_child(__MODULE__, %{id: Game.State, start: {Game.State, :start_link, [room_id]}, restart: :transient})
+    DynamicSupervisor.start_child(__MODULE__, %{
+      id: Game.State,
+      start: {Game.State, :start_link, [room_id]},
+      restart: :transient
+    })
   end
 
   @impl true

@@ -13,15 +13,16 @@ defmodule Werewolf.Game.State do
 
     ok(
       state
-        |> Map.put(:players, [new_player | state.players])
-        |> Map.put(:leader, leader)
+      |> Map.put(:players, [new_player | state.players])
+      |> Map.put(:leader, leader)
     )
   end
 
   def handle_message(:lobby, {:leave, player}, state) do
     new_player_list = Enum.reject(state.players, fn p -> p == player end)
 
-    new_state = state
+    new_state =
+      state
       |> Map.put(:players, new_player_list)
 
     if new_player_list == [] do
@@ -44,7 +45,8 @@ defmodule Werewolf.Game.State do
   end
 
   def join(room_id) do
-    Supervisor.start_child(room_id) |> IO.inspect(label: :join) # todo i hate this code it shouldn't be here!11
+    # todo i hate this code it shouldn't be here!11
+    Supervisor.start_child(room_id) |> IO.inspect(label: :join)
     send_message(room_id, {:join, self()})
   end
 
