@@ -18,8 +18,8 @@ defmodule Werewolf.FSM do
       end
 
       @impl true
-      def handle_cast({:user_message, message}, {room_state, game_state}) do
-        case apply(__MODULE__, :handle_message, [room_state, message, game_state]) do
+      def handle_cast({:user_message, pid, message}, {room_state, game_state}) do
+        case apply(__MODULE__, :handle_message, [room_state, pid, message, game_state]) do
           {:ok, response} ->
             {:noreply, {room_state, response}}
 
@@ -32,8 +32,10 @@ defmodule Werewolf.FSM do
         GenServer.cast(self(), {:change_state, new_state})
       end
 
-      defp send_message(room_id, message) do
-        GenServer.cast(via(room_id), {:user_message, message})
+      defmacro room <~ message do
+        quote do
+          GenServer.cast(via(unquote(room)), {:user_message, self(), unquote(message)})
+        end
       end
 
       defp via(room_id) do
@@ -50,4 +52,3 @@ defmodule Werewolf.FSM do
     end
   end
 end
-
