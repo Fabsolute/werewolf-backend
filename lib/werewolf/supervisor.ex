@@ -1,4 +1,4 @@
-defmodule Werewolf.Game.Supervisor do
+defmodule Werewolf.Supervisor do
   use DynamicSupervisor
   alias Werewolf.Game
 
@@ -9,8 +9,8 @@ defmodule Werewolf.Game.Supervisor do
   def ensure_child_started(room_id) do
     if Registry.lookup(Werewolf.Registry, room_id) == [] do
       DynamicSupervisor.start_child(__MODULE__, %{
-        id: Game.State,
-        start: {Game.State, :start_link, [room_id]},
+        id: Game,
+        start: {Game, :start_link, [room_id]},
         restart: :transient
       })
     end

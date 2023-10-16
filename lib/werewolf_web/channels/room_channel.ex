@@ -1,7 +1,7 @@
 defmodule WerewolfWeb.RoomChannel do
   use WerewolfWeb, :channel
   alias WerewolfWeb.Presence
-  alias Werewolf.Game.State, as: Game
+  alias Werewolf.Game
 
   intercept ["presence_diff"]
 

@@ -1,6 +1,6 @@
-defmodule Werewolf.Game.State.Game do
+defmodule Werewolf.Game.Game do
   use Werewolf.FSM.State
-  alias Werewolf.Game.State.Lobby
+  alias Werewolf.Game.Lobby
 
   def handle_cast(:list, state) do
     IO.inspect("Hey", label: :game)

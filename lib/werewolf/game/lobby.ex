@@ -1,6 +1,6 @@
-defmodule Werewolf.Game.State.Lobby do
+defmodule Werewolf.Game.Lobby do
   use Werewolf.FSM.State
-  alias Werewolf.Game.{State.Game, PlayerState}
+  alias Werewolf.Game.{Game, PlayerState}
 
   def handle_cast({:join, player}, state) do
     leader = if state.leader == nil, do: player, else: state.leader

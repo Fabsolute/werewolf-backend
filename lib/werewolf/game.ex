@@ -1,8 +1,9 @@
-defmodule Werewolf.Game.State do
+defmodule Werewolf.Game do
   defstruct id: nil, leader: nil, players: %{}, day: 0, is_night: false
 
   use Werewolf.FSM
-  alias Werewolf.Game.{Supervisor, State.Lobby}
+  alias Werewolf.Supervisor
+  alias Werewolf.Game.Lobby
 
   def game_init(room_id) do
     {Lobby, %__MODULE__{id: room_id}}

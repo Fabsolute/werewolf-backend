@@ -17,13 +17,13 @@ defmodule Werewolf.Application do
       WerewolfWeb.Endpoint,
       # Start a worker by calling: Werewolf.Worker.start_link(arg)
       # {Werewolf.Worker, arg}
-      Werewolf.Game.Supervisor,
+      Werewolf.Supervisor,
       {Registry, name: Werewolf.Registry, keys: :unique}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Werewolf.Supervisor]
+    opts = [strategy: :one_for_one, name: Werewolf.Application.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
