@@ -45,13 +45,13 @@ defmodule WerewolfWeb.RoomChannel do
   #     }}, socket |> assign(:ping, true)}
   # end
 
-  # # It is also common to receive messages from the client and
-  # # broadcast to everyone in the current topic (room:lobby).
-  # @impl true
-  # def handle_in("shout", payload, socket) do
-  #   broadcast(socket, "shout", %{payload: payload, username: socket.assigns.username})
-  #   {:noreply, socket}
-  # end
+  # It is also common to receive messages from the client and
+  # broadcast to everyone in the current topic (room:lobby).
+  @impl true
+  def handle_in("shout", payload, socket) do
+    broadcast(socket, "shout", %{payload: payload, username: socket.assigns.username})
+    {:noreply, socket}
+  end
 
   @impl true
   def handle_out("presence_diff", %{joins: joins, leaves: leaves}, socket) do
