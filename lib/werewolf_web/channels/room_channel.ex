@@ -14,7 +14,7 @@ defmodule WerewolfWeb.RoomChannel do
         {
           :ok,
           socket
-          |> assign(:room_id, room_id)
+          |> assign(:room, {:room, room_id})
           |> assign(:username, username)
         }
 
@@ -28,7 +28,7 @@ defmodule WerewolfWeb.RoomChannel do
 
   @impl true
   def handle_in("ready", %{}, socket) do
-    Game.ready(socket.assigns.room_id)
+    Game.ready(socket.assigns.room)
     {:noreply, socket}
   end
 
@@ -68,13 +68,19 @@ defmodule WerewolfWeb.RoomChannel do
     Presence.track(socket, socket.assigns.username, %{})
     push(socket, "presence_state", %{users: Presence.list(socket) |> Map.keys()})
 
-    Game.join(socket.assigns.room_id)
+    Game.join(socket.assigns.room)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:state_changed, state}, socket) do
+    {state, self()} |> IO.inspect(label: "hey state changed message!")
     {:noreply, socket}
   end
 
   @impl true
   def terminate(_reason, socket) do
-    Game.leave(socket.assigns.room_id)
+    Game.leave(socket.assigns.room)
     {:stop, :shutdown, socket}
   end
 

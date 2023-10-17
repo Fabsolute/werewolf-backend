@@ -1,5 +1,5 @@
 defmodule Werewolf.Game.Game do
-  use Werewolf.FSM.State
+  use Werewolf, :state
   alias Werewolf.Game.Lobby
 
   def handle_cast(:list, state) do

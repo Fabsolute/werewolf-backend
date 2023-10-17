@@ -6,4 +6,8 @@ defmodule Werewolf.Game.PlayerState do
   def ready(player) do
     Map.put(player, :ready, !player.ready)
   end
+
+  def safe({player, info}) do
+    %{player: player, ready: info.ready}
+  end
 end

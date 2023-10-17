@@ -1,5 +1,6 @@
 defmodule Werewolf.Game.Lobby do
-  use Werewolf.FSM.State
+  use Werewolf, :state
+
   alias Werewolf.Game.{Game, PlayerState}
 
   def handle_cast({:join, player}, state) do
@@ -17,8 +18,8 @@ defmodule Werewolf.Game.Lobby do
       state
       |> Map.put(:players, Map.update!(state.players, player, &PlayerState.ready/1))
 
-    IO.inspect(new_state, label: :new_state_after_ready)
-    # todo broadcast the updates!
+    self() <~ :broadcast_state
+
     ok(new_state)
   end
 
@@ -36,9 +37,26 @@ defmodule Werewolf.Game.Lobby do
     end
   end
 
-  def handle_message(:list, state) do
-    state.players |> IO.inspect(label: :players)
+  def handle_cast(:list, state) do
     change_state(Game)
+    ok(state)
+  end
+
+  def handle_cast(:broadcast_state, state) do
+    clean_state =
+      %{
+        day: state.day,
+        is_night: state.is_night,
+        leader: state.leader,
+        players: state.players |> Map.to_list() |> Enum.map(&PlayerState.safe/1)
+      }
+
+    state.players
+    |> Map.keys()
+    |> Enum.each(fn player ->
+      player <~ {:state_changed, clean_state}
+    end)
+
     ok(state)
   end
 end

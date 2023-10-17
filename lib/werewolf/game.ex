@@ -1,16 +1,16 @@
 defmodule Werewolf.Game do
   defstruct id: nil, leader: nil, players: %{}, day: 0, is_night: false
 
-  use Werewolf.FSM
+  use Werewolf, :fsm
 
   def game_init(room_id) do
     {Werewolf.Game.Lobby, %__MODULE__{id: room_id}}
   end
 
-  def join(room) do
-    Werewolf.Supervisor.ensure_child_started(room)
+  def join({:room, room_id} = room) do
+    Werewolf.Supervisor.ensure_child_started(room_id)
 
-    room <~ {:join, self()}
+    room <~ {:join, player()}
   end
 
   def list(room) do
@@ -18,10 +18,10 @@ defmodule Werewolf.Game do
   end
 
   def leave(room) do
-    room <~ {:leave, self()}
+    room <~ {:leave, player()}
   end
 
   def ready(room) do
-    room <~ {:ready, self()}
+    room <~ {:ready, player()}
   end
 end
