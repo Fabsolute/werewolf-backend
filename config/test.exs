@@ -7,10 +7,6 @@ config :werewolf, WerewolfWeb.Endpoint,
   secret_key_base: "MQ0DDXm2IuNiKOydJUuF54FJpHT3ohYFErWrlXiz9+RKJbJVkwViFZQDMQrXI/wN",
   server: false
 
-# In test we don't send emails.
-config :werewolf, Werewolf.Mailer,
-  adapter: Swoosh.Adapters.Test
-
 # Print only warnings and errors during test
 config :logger, level: :warn
 

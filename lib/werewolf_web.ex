@@ -22,7 +22,6 @@ defmodule WerewolfWeb do
       use Phoenix.Controller, namespace: WerewolfWeb
 
       import Plug.Conn
-      import WerewolfWeb.Gettext
       alias WerewolfWeb.Router.Helpers, as: Routes
     end
   end
@@ -80,7 +79,6 @@ defmodule WerewolfWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import WerewolfWeb.Gettext
     end
   end
 
@@ -96,7 +94,6 @@ defmodule WerewolfWeb do
       import Phoenix.View
 
       import WerewolfWeb.ErrorHelpers
-      import WerewolfWeb.Gettext
       alias WerewolfWeb.Router.Helpers, as: Routes
     end
   end
