@@ -7,10 +7,10 @@ defmodule Werewolf.Game do
     {Werewolf.Game.Lobby, %__MODULE__{id: room_id}}
   end
 
-  def join({:room, room_id} = room) do
+  def join({:room, room_id} = room, username) do
     Werewolf.Supervisor.ensure_child_started(room_id)
 
-    room <~ {:join, player()}
+    room <~ {:join, player(), username}
   end
 
   def list(room) do

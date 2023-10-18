@@ -3,12 +3,12 @@ defmodule Werewolf.Game.Lobby do
 
   alias Werewolf.Game.{Game, PlayerState}
 
-  def handle_cast({:join, player}, state) do
+  def handle_cast({:join, player, username}, state) do
     leader = if state.leader == nil, do: player, else: state.leader
 
-    ok(
+    broadcast(
       state
-      |> Map.put(:players, Map.put(state.players, player, PlayerState.new()))
+      |> Map.put(:players, Map.put(state.players, player, PlayerState.new(username)))
       |> Map.put(:leader, leader)
     )
   end
@@ -18,9 +18,7 @@ defmodule Werewolf.Game.Lobby do
       state
       |> Map.put(:players, Map.update!(state.players, player, &PlayerState.ready/1))
 
-    self() <~ :broadcast_state
-
-    ok(new_state)
+    broadcast(new_state)
   end
 
   def handle_cast({:leave, player}, state) do
@@ -33,7 +31,7 @@ defmodule Werewolf.Game.Lobby do
     if new_player_list == %{} do
       stop(new_state)
     else
-      ok(new_state)
+      broadcast(new_state)
     end
   end
 
@@ -56,6 +54,12 @@ defmodule Werewolf.Game.Lobby do
     |> Enum.each(fn player ->
       player <~ {:state_changed, clean_state}
     end)
+
+    ok(state)
+  end
+
+  defp broadcast(state) do
+    self() <~ :broadcast_state
 
     ok(state)
   end

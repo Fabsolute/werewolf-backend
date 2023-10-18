@@ -17,7 +17,8 @@ defmodule WerewolfWeb.Router do
   scope "/", WerewolfWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live "/:room_id", GameLive
+    live "/", GameLive
   end
 
   # Other scopes may use custom stacks.
@@ -35,10 +36,10 @@ defmodule WerewolfWeb.Router do
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 
-    scope "/" do
+    scope "/dashboard" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: WerewolfWeb.Telemetry
+      live_dashboard "/", metrics: WerewolfWeb.Telemetry
     end
   end
 end

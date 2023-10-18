@@ -43,8 +43,9 @@ defmodule WerewolfWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {WerewolfWeb.LayoutView, "live.html"}
+      use Phoenix.LiveView, layout: {WerewolfWeb.LayoutView, "live.html"}
+
+      alias WerewolfWeb.Presence
 
       unquote(view_helpers())
     end
@@ -53,6 +54,8 @@ defmodule WerewolfWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+
+      alias WerewolfWeb.Presence
 
       unquote(view_helpers())
     end
