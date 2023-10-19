@@ -1,0 +1,10 @@
+<%= if @room == nil or not @authenticated do %>
+  <.live_component id="auth" module={WerewolfWeb.AuthComponent} room={@room} authenticated={@authenticated} />
+<% else %>
+  <%= if not @in_game do %>
+    <.live_component id="lobby" module={WerewolfWeb.LobbyComponent} />
+  <% else %>
+    <.live_component id="game" module={WerewolfWeb.GameComponent} />
+  <% end %>
+<% end %>
+

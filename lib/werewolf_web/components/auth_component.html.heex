@@ -1,0 +1,15 @@
+<div>
+  <%= if @room == nil do %>
+   <form phx-submit="join" phx-target={@myself}>
+      <input type="text" name="name" placeholder="Game Name"/>
+      <button type="submit">Enter</button>
+    </form>
+  <% else %>
+    <%= if not @authenticated do %>
+      <form phx-submit="login" phx-target={@myself}>
+        <input type="text" name="username" placeholder="Username"/>
+        <button type="submit">JOIN</button>
+      </form>
+    <% end %>
+  <%end%>
+</div>
