@@ -2,9 +2,18 @@
   <.live_component id="auth" module={WerewolfWeb.AuthComponent} room={@room} authenticated={@authenticated} />
 <% else %>
   <%= if not @in_game do %>
-    <.live_component id="lobby" module={WerewolfWeb.LobbyComponent} />
+    <.live_component 
+      id="lobby" 
+      module={WerewolfWeb.LobbyComponent} 
+      room={@room}
+      starting={@state[:starting]}
+      players={@state[:players]} 
+      you={@state[:you]}
+    />
   <% else %>
     <.live_component id="game" module={WerewolfWeb.GameComponent} />
   <% end %>
 <% end %>
-
+<%=if @state[:counter] != nil do%>
+<h1>Counter: <%=@state.counter %> </h1>
+<% end %>

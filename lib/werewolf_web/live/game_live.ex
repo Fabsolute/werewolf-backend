@@ -24,13 +24,17 @@ defmodule WerewolfWeb.GameLive do
   end
 
   def handle_info({:state_changed, new_state}, socket) do
-    {:noreply, socket |> assign(state: new_state)}
+    {:noreply, socket |> assign(state: new_state) |> IO.inspect(label: :state_changed)}
   end
 
   def handle_info({:authenticated, username}, socket) do
     Game.join(socket.assigns.room, username)
 
     {:noreply, socket |> assign(authenticated: true, username: username)}
+  end
+
+  def handle_info({:counter, n}, socket) do
+    {:noreply, socket |> assign(:state, Map.put(socket.assigns.state, :counter, n))}
   end
 
   def terminate(_reason, socket) do

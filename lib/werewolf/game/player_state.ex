@@ -8,6 +8,10 @@ defmodule Werewolf.Game.PlayerState do
   end
 
   def safe({player, info}) do
+    safe(info, player)
+  end
+
+  def safe(info, player) do
     %{player: player, username: info.username, ready: info.ready}
   end
 end

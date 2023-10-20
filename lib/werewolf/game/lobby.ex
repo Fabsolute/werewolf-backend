@@ -18,6 +18,8 @@ defmodule Werewolf.Game.Lobby do
       state
       |> Map.put(:players, Map.update!(state.players, player, &PlayerState.ready/1))
 
+    self() <~ :check_start
+
     broadcast(new_state)
   end
 
@@ -35,27 +37,40 @@ defmodule Werewolf.Game.Lobby do
     end
   end
 
-  def handle_cast(:list, state) do
-    change_state(Game)
-    ok(state)
+  # def handle_cast(:list, state) do
+  #   change_state(Game)
+  #   ok(state)
+  # end
+
+  def handle_cast(:check_start, state) do
+    counter =
+      if map_size(state.players) > 1 and Enum.all?(state.players |> Map.values(), & &1.ready) do
+        delay({:counter, 3}, 1000)
+        3
+      end
+
+    ok(state |> Map.put(:counter, counter))
   end
 
   def handle_cast(:broadcast_state, state) do
-    clean_state =
-      %{
-        day: state.day,
-        is_night: state.is_night,
-        leader: state.leader,
-        players: state.players |> Map.to_list() |> Enum.map(&PlayerState.safe/1)
-      }
-
-    state.players
-    |> Map.keys()
-    |> Enum.each(fn player ->
-      player <~ {:state_changed, clean_state}
-    end)
+    state
+    |> send_all(&{:state_changed, safe(state, &1)})
 
     ok(state)
+  end
+
+  def handle_info({:counter, 0}, state) do
+    change_state(Game)
+    ok(state |> Map.put(:counter, nil))
+  end
+
+  def handle_info({:counter, n}, state) do
+    state
+    |> send_all(fn _player -> {:counter, n} end)
+
+    delay({:counter, n - 1}, 1000)
+
+    ok(state |> Map.put(:counter, n))
   end
 
   defp broadcast(state) do

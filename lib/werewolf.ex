@@ -6,6 +6,8 @@ defmodule Werewolf do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+  alias Werewolf.Game.PlayerState
+
   def fun do
     quote do
       defp player() do
@@ -55,6 +57,31 @@ defmodule Werewolf do
   def state do
     quote do
       use Werewolf, :fun
+      alias Werewolf.Game.PlayerState
+
+      defp safe(state, player) do
+        %{
+          day: state.day,
+          is_night: state.is_night,
+          leader: state.players[state.leader] |> PlayerState.safe(state.leader),
+          players: state.players |> Map.to_list() |> Enum.map(&PlayerState.safe/1),
+          you: state.players[player] |> PlayerState.safe(player)
+        }
+      end
+
+      defp delay(message, delay) do
+        Process.send_after(self(), {:user_message, message}, delay)
+      end
+
+      defp send_all(state, fun) do
+        each_player(state, &(&1 <~ fun.(&1)))
+      end
+
+      defp each_player(state, fun) do
+        state.players
+        |> Map.keys()
+        |> Enum.each(fun)
+      end
 
       defp change_state(new_state) do
         GenServer.cast(self(), {:change_state, new_state})
@@ -108,6 +135,17 @@ defmodule Werewolf do
 
           {:reply, response, new_game_state} ->
             {:reply, response, {room_state, new_game_state}}
+
+          {:stop, reason, new_game_state} ->
+            {:stop, reason, {room_state, new_game_state}}
+        end
+      end
+
+      @impl true
+      def handle_info({:user_message, message}, {room_state, game_state}) do
+        case apply(room_state, :handle_info, [message, game_state]) do
+          {:noreply, new_game_state} ->
+            {:noreply, {room_state, new_game_state}}
 
           {:stop, reason, new_game_state} ->
             {:stop, reason, {room_state, new_game_state}}

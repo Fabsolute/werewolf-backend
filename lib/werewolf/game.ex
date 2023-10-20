@@ -1,5 +1,5 @@
 defmodule Werewolf.Game do
-  defstruct id: nil, leader: nil, players: %{}, day: 0, is_night: false
+  defstruct id: nil, leader: nil, players: %{}, day: 0, is_night: false, counter: nil
 
   use Werewolf, :fsm
 

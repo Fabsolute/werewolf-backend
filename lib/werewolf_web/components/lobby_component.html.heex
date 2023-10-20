@@ -1,2 +1,13 @@
-<div>Lobby</div>
+<div>
+  <button phx-click="ready" phx-target={@myself}><%=if @you[:ready] do %>NOT<%end%> READY</button>
+  <%=if @players != nil do %>
+    <ul>
+      <%= for user <- @players do %>
+        <li class="player">
+          <i class={"indicator#{if user.ready do " ready" end}"}></i><%=user.username%>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
 
