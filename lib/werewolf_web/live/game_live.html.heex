@@ -16,5 +16,5 @@
 <% end %>
 
 <%= if @state[:counter] != nil do%>
-  <h1>Counter: <%=@state.counter %> </h1>
+  <h1><%=@state.counter.message%>: <%=trunc(@state.counter.remainder / @state.counter.period) %> </h1>
 <% end %>

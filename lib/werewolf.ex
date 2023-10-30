@@ -10,6 +10,8 @@ defmodule Werewolf do
 
   def fun do
     quote do
+      alias Werewolf.Util.Timer
+
       defmacro room <<~ message do
         quote bind_quoted: [room: room, message: message] do
           pid = self()
@@ -93,6 +95,10 @@ defmodule Werewolf do
       defp change_state(new_state) do
         GenServer.cast(self(), {:change_state, new_state})
       end
+
+      defp start_timer(message, total, args \\ []) do
+        Timer.start!(message, total, Keyword.put(args, :wrapper, &{:user_message, &1}))
+      end
     end
   end
 
@@ -151,21 +157,13 @@ defmodule Werewolf do
       end
 
       defp apply_user_message(message, room_state, game_state) when is_atom(message) do
-        fun = String.to_atom("handle_#{message}")
-
-        if Kernel.function_exported?(room_state, fun, 1) do
-          apply(room_state, fun, [game_state])
-        else
-          apply(__MODULE__, fun, [game_state])
-        end
+        apply_user_message({message}, room_state, game_state)
       end
 
       defp apply_user_message(message, room_state, game_state)
            when is_tuple(message) and is_atom(elem(message, 0)) do
         fun = String.to_atom("handle_#{elem(message, 0)}")
         params = [game_state | tl(Tuple.to_list(message))]
-
-        {fun, params} |> IO.inspect(label: :lol)
 
         if Kernel.function_exported?(room_state, fun, tuple_size(message)) do
           apply(room_state, fun, params)

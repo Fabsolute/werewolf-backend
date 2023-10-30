@@ -18,6 +18,10 @@ defmodule Werewolf.Supervisor do
     :ok
   end
 
+  def start_child(child) do
+    DynamicSupervisor.start_child(__MODULE__, Map.put(child, :restart, :transient))
+  end
+
   @impl true
   def init(_) do
     DynamicSupervisor.init(strategy: :one_for_one)

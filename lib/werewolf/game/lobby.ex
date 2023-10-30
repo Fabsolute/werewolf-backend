@@ -2,38 +2,49 @@ defmodule Werewolf.Game.Lobby do
   use Werewolf, :state
 
   alias Werewolf.Game.{Game, PlayerState}
+  alias Werewolf.Util.Timer
 
   def handle_ready(state, player) do
     new_state =
       state
       |> Map.put(:players, Map.update!(state.players, player, &PlayerState.ready/1))
 
-    self() <~ :check_start
+    self() <~ :check_game
 
     broadcast(new_state)
   end
 
-  def handle_check_start(state) do
+  def handle_check_game(state) do
+    state |> IO.inspect(label: :check_game)
+
     state =
       if map_size(state.players) > 1 and Enum.all?(state.players |> Map.values(), & &1.ready) do
-        state |> Map.put(:counter, 3) |> handle_counter() |> elem(1)
+        if state.timer == nil do
+          state
+          |> Map.put(
+            :timer,
+            start_timer("Game starting", 3000)
+          )
+        else
+          state
+        end
       else
-        state
+        if state.timer != nil do
+          Timer.stop(state.timer)
+        end
+
+        state |> Map.put(:timer, nil)
       end
 
     ok(state)
   end
 
-  def handle_counter(state) do
+  def handle_timer_message(state, _timer_pid, args) do
     state
-    |> send_all(fn _player -> {:counter, state.counter} end)
+    |> send_all(fn _player ->
+      {:counter, args}
+    end)
 
-    if state.counter == 0 do
-      change_state(Game)
-    else
-      delay(:counter, 1000)
-    end
-
-    ok(state |> Map.put(:counter, state.counter - 1))
+    ok(state)
   end
 end
