@@ -111,8 +111,11 @@ defmodule Werewolf do
 
   def fsm do
     quote location: :keep do
+      Module.register_attribute(__MODULE__, :state, accumulate: true)
+
       use Werewolf, :fun
       use GenServer
+      @before_compile Werewolf
 
       def start_link(room_id) do
         GenServer.start_link(__MODULE__, room_id, name: via(room_id))
@@ -178,5 +181,16 @@ defmodule Werewolf do
 
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
+  end
+
+  defmacro __before_compile__(env) do
+    states = Module.get_attribute(env.module, :state)
+
+    quote do
+      @on_load :__on_load
+      def __on_load do
+        Code.ensure_all_loaded!(unquote(states))
+      end
+    end
   end
 end

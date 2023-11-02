@@ -4,6 +4,9 @@ defmodule Werewolf.Game do
   use Werewolf, :fsm
   alias Werewolf.Game.PlayerState
 
+  @state Werewolf.Game.Lobby
+  @state Werewolf.Game.Game
+
   def game_init(room_id) do
     {Werewolf.Game.Lobby, %__MODULE__{id: room_id}}
   end
