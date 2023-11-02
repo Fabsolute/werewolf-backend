@@ -168,10 +168,17 @@ defmodule Werewolf do
         fun = String.to_atom("handle_#{elem(message, 0)}")
         params = [game_state | tl(Tuple.to_list(message))]
 
-        if Kernel.function_exported?(room_state, fun, tuple_size(message)) do
+        if Kernel.function_exported?(room_state, fun, length(params)) do
           apply(room_state, fun, params)
         else
-          apply(__MODULE__, fun, params)
+          if Kernel.function_exported?(__MODULE__, fun, length(params)) do
+            apply(__MODULE__, fun, params)
+          else
+            # todo logger
+            IO.warn("Skipping message: " <> to_string(fun) <> "/" <> to_string(length(params)))
+            IO.inspect(params, label: :skipped_params)
+            {:noreply, game_state}
+          end
         end
       end
 
